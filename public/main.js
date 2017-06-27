@@ -28,6 +28,19 @@ function createTodo(title, callback) {
         }
     };
 }
+function deleteToDo(id, callback) {
+    var createRequest = new XMLHttpRequest();
+    createRequest.open("DELETE", "/api/todo/" + id);
+    createRequest.setRequestHeader("Content-type", "application/json");
+    createRequest.send();
+    createRequest.onload = function() {
+        if (this.status === 200) {
+            callback();
+        } else {
+            error.textContent = "Failed to delete item. Server returned " + this.status + " - " + this.responseText;
+        }
+    };
+}
 
 function getTodoList(callback) {
     var createRequest = new XMLHttpRequest();
@@ -42,14 +55,21 @@ function getTodoList(callback) {
     createRequest.send();
 }
 
-function addDeleteButton(listItem){
+//appends delete button element to todo list item
+function addDeleteButton(listItem, todo) {
     var deleteButton = document.createElement("BUTTON");
     var t = document.createTextNode("DELETE");
     deleteButton.appendChild(t);
+    //click delete button -> the id of the todo is taken and used to delete the todo
+    deleteButton.onclick = function(e) {
+        e.preventDefault();
+        deleteToDo(todo.id, function() {
+            reloadTodoList();
+        });
+    };
     listItem.append(deleteButton);
     return listItem;
 }
-
 
 function reloadTodoList() {
     while (todoList.firstChild) {
@@ -61,11 +81,8 @@ function reloadTodoList() {
         todos.forEach(function(todo) {
             var listItem = document.createElement("li");
             listItem.textContent = todo.title;
-            addDeleteButton(listItem);
+            addDeleteButton(listItem, todo);
             todoList.appendChild(listItem);
-
-            
-
 
         });
     });
