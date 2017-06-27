@@ -18,61 +18,42 @@ form.onsubmit = function(event) {
 };
 
 function createTodo(title, callback) {
-    var createRequest = new XMLHttpRequest();
-    createRequest.open("POST", "/api/todo");
-    createRequest.setRequestHeader("Content-type", "application/json");
-    createRequest.send(JSON.stringify({
-        title: title,
-        isComplete: false,
-    }));
-    createRequest.onload = function() {
-        if (this.status === 201) {
-            callback();
-        } else {
+    fetch("./api/todo", {method: "post", headers: {"Content-type": "application/json"},
+        body: JSON.stringify({title: title, isComplete: false})
+    }).then(function(response) {
+        if (response.status !== 201) {
             error.textContent = "Failed to create item. Server returned " + this.status + " - " + this.responseText;
         }
-    };
+    }).then(callback);
 }
 
 function deleteToDo(id, callback) {
-    var createRequest = new XMLHttpRequest();
-    createRequest.open("DELETE", "/api/todo/" + id);
-    createRequest.setRequestHeader("Content-type", "application/json");
-    createRequest.send();
-    createRequest.onload = function() {
-        if (this.status === 200) {
-            callback();
-        } else {
-            error.textContent = "Failed to delete item";
+    var api = "/api/todo/" + id;
+    fetch(api, {method: "delete"}).then(function(response) {
+        if (response.status !== 200) {
+            error.textContent = "Failed to delete todo item";
         }
-    };
+    }).then(callback);
 }
 
 function updateCompleted(id, callback) {
-    var createRequest = new XMLHttpRequest();
-    createRequest.open("PUT", "/api/todo/" + id);
-    createRequest.setRequestHeader("Content-type", "application/json");
-    createRequest.send();
-    createRequest.onload = function() {
-        if (this.status === 200) {
-            callback();
-        } else {
+    var api = "/api/todo/" + id;
+    fetch(api, {method: "put"}).then(function(response) {
+        if (response.status !== 200) {
             error.textContent = "Failed to make item completed";
         }
-    };
+    }).then(callback);
 }
 
 function getTodoList(callback) {
-    var createRequest = new XMLHttpRequest();
-    createRequest.open("GET", "/api/todo");
-    createRequest.onload = function() {
-        if (this.status === 200) {
-            callback(JSON.parse(this.responseText));
-        } else {
-            error.textContent = "Failed to get list. Server returned " + this.status + " - " + this.responseText;
+    fetch("./api/todo").then(function(response) {
+        if (response.status !== 200) {
+            error.textContent = "Failed to get todo list";
         }
-    };
-    createRequest.send();
+        else {
+            response.json().then(callback);
+        }
+    });
 }
 
 //appends delete button element to todo list item
@@ -184,7 +165,10 @@ function reloadTodoList() {
         todos.forEach(function(todo) {
             if ((active && !todo.isComplete) || (completed && todo.isComplete)) {
                 var listItem = document.createElement("li");
-                listItem.textContent = todo.title;
+                var para = document.createElement("P");
+                para.className = "todoName";
+                para.innerHTML = todo.title;
+                listItem.appendChild(para);
                 if (todo.isComplete) {
                     listItem.style.color = "green";
                     completedCount++;
