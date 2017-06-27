@@ -29,6 +29,7 @@ function createTodo(title, callback) {
         }
     };
 }
+
 function deleteToDo(id, callback) {
     var createRequest = new XMLHttpRequest();
     createRequest.open("DELETE", "/api/todo/" + id);
@@ -42,6 +43,7 @@ function deleteToDo(id, callback) {
         }
     };
 }
+
 function updateCompleted(id, callback) {
     var createRequest = new XMLHttpRequest();
     createRequest.open("PUT", "/api/todo/" + id);
@@ -55,7 +57,6 @@ function updateCompleted(id, callback) {
         }
     };
 }
-
 
 function getTodoList(callback) {
     var createRequest = new XMLHttpRequest();
@@ -85,11 +86,12 @@ function addDeleteButton(listItem, todo) {
     listItem.append(deleteButton);
     return listItem;
 }
+
 function addCompleteButton(listItem, todo) {
     var completeButton = document.createElement("BUTTON");
     var text = "Complete";
-    if(todo.isComplete){
-        var text = "Undo Complete";
+    if (todo.isComplete) {
+        text = "Undo Complete";
     }
     var t = document.createTextNode(text);
     completeButton.appendChild(t);
@@ -97,7 +99,7 @@ function addCompleteButton(listItem, todo) {
         e.preventDefault();
         updateCompleted(todo.id, function() {
             reloadTodoList();
-        })
+        });
     };
     listItem.append(completeButton);
     return listItem;
@@ -113,8 +115,7 @@ function reloadTodoList() {
         todos.forEach(function(todo) {
             var listItem = document.createElement("li");
             listItem.textContent = todo.title;
-            
-            if(todo.isComplete){
+            if (todo.isComplete) {
                 listItem.style.color = "green";
             }
             addDeleteButton(listItem, todo);
