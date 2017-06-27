@@ -32,12 +32,23 @@ module.exports = function(port, middleware, callback) {
     // Delete
     app.delete("/api/todo/:id", function(req, res) {
         var id = req.params.id;
-        console.log("delete id = " + id);
         var todo = getTodo(id);
         if (todo) {
             todos = todos.filter(function(otherTodo) {
                 return otherTodo !== todo;
             });
+            res.sendStatus(200);
+        } else {
+            res.sendStatus(404);
+        }
+    });
+
+    // Put
+    app.put("/api/todo/:id", function(req, res) {
+        var id = req.params.id;
+        var todo = getTodo(id);
+        if (todo) {
+            todo.isComplete = !todo.isComplete;
             res.sendStatus(200);
         } else {
             res.sendStatus(404);
