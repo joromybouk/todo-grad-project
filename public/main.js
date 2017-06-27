@@ -42,6 +42,15 @@ function getTodoList(callback) {
     createRequest.send();
 }
 
+function addDeleteButton(listItem){
+    var deleteButton = document.createElement("BUTTON");
+    var t = document.createTextNode("DELETE");
+    deleteButton.appendChild(t);
+    listItem.append(deleteButton);
+    return listItem;
+}
+
+
 function reloadTodoList() {
     while (todoList.firstChild) {
         todoList.removeChild(todoList.firstChild);
@@ -52,7 +61,12 @@ function reloadTodoList() {
         todos.forEach(function(todo) {
             var listItem = document.createElement("li");
             listItem.textContent = todo.title;
+            addDeleteButton(listItem);
             todoList.appendChild(listItem);
+
+            
+
+
         });
     });
 }
