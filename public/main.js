@@ -3,6 +3,10 @@ var todoListPlaceholder = document.getElementById("todo-list-placeholder");
 var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
+var toCompleteDiv = document.getElementById("count-label");
+var buttonList = document.getElementById("button-list");
+var active = true;
+var completed = true;
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -105,24 +109,108 @@ function addCompleteButton(listItem, todo) {
     return listItem;
 }
 
-function reloadTodoList() {
-    while (todoList.firstChild) {
-        todoList.removeChild(todoList.firstChild);
+function addDeleteCompleted() {
+    var deleteCompletedButton = document.createElement("BUTTON");
+    var t = document.createTextNode("Delete Completed");
+    deleteCompletedButton.appendChild(t);
+    deleteCompletedButton.onclick = function(e) {
+        getTodoList(function(todos) {
+            todos.forEach(function(todo) {
+                if (todo.isComplete){
+                    deleteToDo(todo.id, function() {
+                        reloadTodoList();
+                    });
+                }
+            });
+        });
     }
-    todoListPlaceholder.style.display = "block";
+    buttonList.append(deleteCompletedButton);
+}
+
+function addShowToComplete() {
+    var toComp = document.createElement("BUTTON");
+    var t = document.createTextNode("Active");
+    toComp.appendChild(t);
+    toComp.onclick = function(e) {
+        e.preventDefault();
+        active = true;
+        completed = false;
+        reloadTodoList();
+    }
+    buttonList.append(toComp);
+}
+
+function addShowAll() {
+    var allButton = document.createElement("BUTTON");
+    var t = document.createTextNode("All");
+    allButton.appendChild(t);
+    allButton.onclick = function(e) {
+        e.preventDefault();
+        active = true;
+        completed = true;
+        reloadTodoList();
+    }
+    buttonList.append(allButton);
+}
+
+function addShowCompleted() {
+    var completedButton = document.createElement("BUTTON");
+    var t = document.createTextNode("Completed");
+    completedButton.appendChild(t);
+    completedButton.onclick = function(e) {
+        e.preventDefault();
+        active = false;
+        completed = true;
+        reloadTodoList();
+    }
+    buttonList.append(completedButton);
+}
+
+function reloadTodoList() {
     getTodoList(function(todos) {
+        var toCompleteCount = 0;
+        var completedCount = 0;
+        toCompleteDiv.textContent = "No tasks to complete";
+        if(completed && !active){
+            toCompleteDiv.textContent = "No tasks completed";
+        }
+        while (todoList.firstChild) {
+            todoList.removeChild(todoList.firstChild);
+        }
+        while(buttonList.firstChild){
+            buttonList.removeChild(buttonList.firstChild);
+        }
         todoListPlaceholder.style.display = "none";
         todos.forEach(function(todo) {
-            var listItem = document.createElement("li");
-            listItem.textContent = todo.title;
-            if (todo.isComplete) {
-                listItem.style.color = "green";
+            if ( (active && !todo.isComplete) || (completed && todo.isComplete) )
+            {
+                var listItem = document.createElement("li");
+                listItem.textContent = todo.title;
+                if (todo.isComplete) {
+                    listItem.style.color = "green";
+                    completedCount++;
+                }
+                else {
+                    toCompleteCount++;
+                    listItem.style.color = "blue";
+                }
+                addDeleteButton(listItem, todo);
+                addCompleteButton(listItem, todo);
+                todoList.appendChild(listItem);
             }
-            addDeleteButton(listItem, todo);
-            addCompleteButton(listItem, todo);
-            todoList.appendChild(listItem);
-
         });
+            addShowAll();
+            addShowToComplete();
+            addShowCompleted();
+        if (toCompleteCount !== 0) {
+            toCompleteDiv.textContent = "Tasks left to complete: " + toCompleteCount;
+        }
+        if (completedCount !== 0) {
+            toCompleteDiv.textContent = "Tasks completed: " + completedCount;
+        }
+        if (completedCount > 0) {
+            addDeleteCompleted();
+        } 
     });
 }
 
