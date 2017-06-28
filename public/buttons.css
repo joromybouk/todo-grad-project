@@ -1,0 +1,80 @@
+.buttonList{
+    margin-bottom: 1em;
+}
+
+.buttonList button{
+    border-radius: 1em;
+    font-size: 1.3em;
+    width: 10em;
+    margin-right: 0.5em;
+    border-color:  blue;
+    color: blue;
+    background-color: white;
+}
+
+.buttonList button:hover{
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.noDeleteComplete{
+    border-radius: 1em;
+    font-size: 1.3em;
+    width: 10em;
+    margin-right: 0.5em;
+    border-color:  blue;
+    color: blue;
+    background-color: white;
+    opacity: 0.35;
+    margin-bottom: 1em;
+}
+
+.completed {
+    margin-left: 3em;
+    border-radius: 0.75em;
+    border-color: green;
+    background-color: white;
+    color: green;
+    font-size : 1.0em;
+    display: inline-block;
+}
+
+.delete{
+    margin-left: 3.0em;
+    border-color: red;
+    border-radius: 0.75em;
+    color: red;
+    font-weight: bold;
+    font-size : 1.2em;
+    background-color: white;
+    display: inline-block;
+}
+
+.fav{
+    color: yellow;
+    margin-right: 1.0em;
+    font-size:2em;
+    text-shadow: -1px 0 #000000,0 1px #000000,1px 0 #000000,0 -1px #000000;
+    display: inline-block;
+}
+
+.fav:hover{
+    cursor: pointer;
+}
+
+.submitForm button {
+    border-radius: 0.35em;
+    border-color: blue;
+    color: blue;
+    font-weight: bold;
+    font-size : 1.3em;
+    background-color: white;
+}
+
+.submitForm button:hover {
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+
+
