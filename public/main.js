@@ -19,7 +19,7 @@ form.onsubmit = function(event) {
 
 function createTodo(title, callback) {
     fetch("./api/todo", {method: "post", headers: {"Content-type": "application/json"},
-        body: JSON.stringify({title: title, isComplete: false})
+        body: JSON.stringify({title: title, isComplete: false, isFavourite: false})
     }).then(function(response) {
         if (response.status !== 201) {
             error.textContent = "Failed to create item. Server returned " + this.status + " - " + this.responseText;
@@ -41,6 +41,15 @@ function updateCompleted(id, callback) {
     fetch(api, {method: "put"}).then(function(response) {
         if (response.status !== 200) {
             error.textContent = "Failed to make item completed";
+        }
+    }).then(callback);
+}
+
+function updateFavourite(id, callback) {
+    var api = "/api/todo/fav/" + id;
+    fetch(api, {method: "put"}).then(function(response) {
+        if (response.status !== 200) {
+            error.textContent = "Failed to favourite item";
         }
     }).then(callback);
 }
@@ -69,6 +78,24 @@ function addDeleteButton(listItem, todo) {
         });
     };
     listItem.append(deleteButton);
+    return listItem;
+}
+
+function addFavouriteButton(listItem, todo) {
+    var favButton = document.createElement("P");
+    favButton.className = "fav";
+    var text = "&#9734;";
+    if (todo.isFavourite) {
+        text = "&#9733;";
+    }
+    favButton.innerHTML = text;
+    favButton.onclick = function(e) {
+        e.preventDefault();
+        updateFavourite(todo.id, function() {
+            reloadTodoList();
+        });
+    };
+    listItem.append(favButton);
     return listItem;
 }
 
@@ -165,6 +192,8 @@ function reloadTodoList() {
         todos.forEach(function(todo) {
             if ((active && !todo.isComplete) || (completed && todo.isComplete)) {
                 var listItem = document.createElement("li");
+                listItem.className = "todolist";
+                addFavouriteButton(listItem, todo);
                 var para = document.createElement("P");
                 para.className = "todoName";
                 para.innerHTML = todo.title;
@@ -177,8 +206,8 @@ function reloadTodoList() {
                     toCompleteCount++;
                     listItem.style.color = "blue";
                 }
-                addDeleteButton(listItem, todo);
                 addCompleteButton(listItem, todo);
+                addDeleteButton(listItem, todo);
                 todoList.appendChild(listItem);
             }
         });

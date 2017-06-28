@@ -55,6 +55,17 @@ module.exports = function(port, middleware, callback) {
         }
     });
 
+    app.put("/api/todo/fav/:id", function(req, res) {
+        var id = req.params.id;
+        var todo = getTodo(id);
+        if (todo) {
+            todo.isFavourite = !todo.isFavourite;
+            res.sendStatus(200);
+        } else {
+            res.sendStatus(404);
+        }
+    });
+
     function getTodo(id) {
         return _.filter(todos, function(todo) {
             return todo.id === id;
