@@ -18,37 +18,6 @@ form.onsubmit = function(event) {
     event.preventDefault();
 };
 
-function createTodo(title, callback) {
-    var today = new Date();
-    var date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
-    var time = today.getHours() + ":" + today.getMinutes();
-    fetch("./api/todo", {method: "post", headers: {"Content-type": "application/json"},
-        body: JSON.stringify({title: title, isComplete: false, isFavourite: false, date: date, time: time})
-    }).then(function(response) {
-        if (response.status !== 201) {
-            error.textContent = "Failed to create item. Server returned " + this.status + " - " + this.responseText;
-        }
-    }).then(callback);
-}
-
-function deleteToDo(id, callback) {
-    var api = "/api/todo/" + id;
-    fetch(api, {method: "delete"}).then(function(response) {
-        if (response.status !== 200) {
-            error.textContent = "Failed to delete todo item";
-        }
-    }).then(callback);
-}
-
-function updateCompleted(id, callback) {
-    var api = "/api/todo/" + id;
-    fetch(api, {method: "put"}).then(function(response) {
-        if (response.status !== 200) {
-            error.textContent = "Failed to make item completed";
-        }
-    }).then(callback);
-}
-
 function updateFavourite(id, callback) {
     var api = "/api/todo/fav/" + id;
     fetch(api, {method: "put"}).then(function(response) {
@@ -124,8 +93,7 @@ function addCompleteButton(listItem, todo) {
 
 function addDeleteCompleted(classIn) {
     var deleteCompletedButton = document.createElement("BUTTON");
-    var t = document.createTextNode("Delete Completed");
-    deleteCompletedButton.appendChild(t);
+    deleteCompletedButton.appendChild(document.createTextNode("Delete Completed"));
     deleteCompletedButton.className = classIn;
     deleteCompletedButton.onclick = function(e) {
         getTodoList(function(todos) {
@@ -141,43 +109,33 @@ function addDeleteCompleted(classIn) {
     buttonList.append(deleteCompletedButton);
 }
 
-function addShowToComplete() {
-    var toComp = document.createElement("BUTTON");
-    var t = document.createTextNode("Active");
-    toComp.appendChild(t);
-    toComp.onclick = function(e) {
-        e.preventDefault();
-        active = true;
-        completed = false;
-        reloadTodoList();
-    };
-    buttonList.append(toComp);
+function showToCompleteClick(e){
+    e.preventDefault();
+    active = true;
+    completed = false;
+    reloadTodoList();
 }
 
-function addShowAll() {
-    var allButton = document.createElement("BUTTON");
-    var t = document.createTextNode("All");
-    allButton.appendChild(t);
-    allButton.onclick = function(e) {
-        e.preventDefault();
-        active = true;
-        completed = true;
-        reloadTodoList();
-    };
-    buttonList.append(allButton);
+function showAllClick(e){
+    e.preventDefault();
+    active = true;
+    completed = true;
+    reloadTodoList();
 }
 
-function addShowCompleted() {
-    var completedButton = document.createElement("BUTTON");
-    var t = document.createTextNode("Completed");
-    completedButton.appendChild(t);
-    completedButton.onclick = function(e) {
-        e.preventDefault();
-        active = false;
-        completed = true;
-        reloadTodoList();
-    };
-    buttonList.append(completedButton);
+function showCompletedClick(e){
+    e.preventDefault();
+    active = false;
+    completed = true;
+    reloadTodoList();
+}
+
+function optionButtons(clickFunction, parent, text) {
+    var button = document.createElement("BUTTON");
+    var t = document.createTextNode(text);
+    button.appendChild(t);
+    button.onclick = clickFunction;
+    parent.append(button);
 }
 
 function reloadTodoList() {
@@ -221,9 +179,9 @@ function reloadTodoList() {
                 todoList.appendChild(listItem);
             }
         });
-        addShowAll();
-        addShowToComplete();
-        addShowCompleted();
+        optionButtons(showAllClick, buttonList,"All");
+        optionButtons(showToCompleteClick, buttonList,"Active");
+        optionButtons(showCompletedClick, buttonList,"Completed");
         if (toCompleteCount !== 0) {
             toCompleteDiv.textContent = "Tasks left to complete: " + toCompleteCount;
         }
