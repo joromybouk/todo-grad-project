@@ -138,6 +138,13 @@ function optionButtons(clickFunction, parent, text) {
     parent.append(button);
 }
 
+function addParagraph(listItem, text, classNameIn) {
+    var para = document.createElement("P");
+    para.className = classNameIn;
+    para.innerHTML = text;
+    listItem.appendChild(para);
+}
+
 function reloadTodoList() {
     getTodoList(function(todos) {
         var toCompleteCount = 0;
@@ -158,10 +165,7 @@ function reloadTodoList() {
                 var listItem = document.createElement("li");
                 listItem.className = "todolist";
                 addFavouriteButton(listItem, todo);
-                var para = document.createElement("P");
-                para.className = "todoName";
-                para.innerHTML = todo.title;
-                listItem.appendChild(para);
+                addParagraph(listItem, todo.title, "todoName")
                 if (todo.isComplete) {
                     listItem.style.color = "green";
                     completedCount++;
@@ -170,10 +174,7 @@ function reloadTodoList() {
                     toCompleteCount++;
                     listItem.style.color = "blue";
                 }
-                var todoinfo = document.createElement("P");
-                todoinfo.className = "date";
-                todoinfo.innerHTML = todo.date + "&nbsp;&nbsp&nbsp;&nbsp;&nbsp;" + todo.time;
-                listItem.appendChild(todoinfo);
+                addParagraph(listItem, todo.date + "&nbsp;&nbsp&nbsp;&nbsp;&nbsp;" + todo.time, "date");
                 addCompleteButton(listItem, todo);
                 addDeleteButton(listItem, todo);
                 todoList.appendChild(listItem);
