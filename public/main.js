@@ -7,6 +7,7 @@ var toCompleteDiv = document.getElementById("count-label");
 var buttonList = document.getElementById("button-list");
 var active = true;
 var completed = true;
+var lastDeleted;
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -18,8 +19,11 @@ form.onsubmit = function(event) {
 };
 
 function createTodo(title, callback) {
+    var today = new Date();
+    var date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
+    var time = today.getHours() + ":" + today.getMinutes();
     fetch("./api/todo", {method: "post", headers: {"Content-type": "application/json"},
-        body: JSON.stringify({title: title, isComplete: false, isFavourite: false})
+        body: JSON.stringify({title: title, isComplete: false, isFavourite: false, date: date, time: time})
     }).then(function(response) {
         if (response.status !== 201) {
             error.textContent = "Failed to create item. Server returned " + this.status + " - " + this.responseText;
@@ -73,6 +77,7 @@ function addDeleteButton(listItem, todo) {
     //click delete button -> the id of the todo is taken and used to delete the todo
     deleteButton.onclick = function(e) {
         e.preventDefault();
+        lastDeleted = todo;
         deleteToDo(todo.id, function() {
             reloadTodoList();
         });
@@ -117,10 +122,11 @@ function addCompleteButton(listItem, todo) {
     return listItem;
 }
 
-function addDeleteCompleted() {
+function addDeleteCompleted(classIn) {
     var deleteCompletedButton = document.createElement("BUTTON");
     var t = document.createTextNode("Delete Completed");
     deleteCompletedButton.appendChild(t);
+    deleteCompletedButton.className = classIn;
     deleteCompletedButton.onclick = function(e) {
         getTodoList(function(todos) {
             todos.forEach(function(todo) {
@@ -206,6 +212,10 @@ function reloadTodoList() {
                     toCompleteCount++;
                     listItem.style.color = "blue";
                 }
+                var todoinfo = document.createElement("P");
+                todoinfo.className = "date";
+                todoinfo.innerHTML = todo.date + "&nbsp;&nbsp&nbsp;&nbsp;&nbsp;" + todo.time;
+                listItem.appendChild(todoinfo);
                 addCompleteButton(listItem, todo);
                 addDeleteButton(listItem, todo);
                 todoList.appendChild(listItem);
@@ -221,7 +231,10 @@ function reloadTodoList() {
             toCompleteDiv.textContent = "Tasks completed: " + completedCount;
         }
         if (completedCount > 0) {
-            addDeleteCompleted();
+            addDeleteCompleted("buttonList");
+        }
+        else {
+            addDeleteCompleted("noDeleteComplete");
         }
     });
 }
